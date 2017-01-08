@@ -12,7 +12,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.1.8.RELEASE</version>
+        <version>1.4.3.RELEASE</version>
     </parent>
 
     <properties>
@@ -30,9 +30,9 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>aspectj-maven-plugin</artifactId>
-                <version>1.7</version>
+                <version>1.9</version>
                 <configuration>
-                    <complianceLevel>1.6</complianceLevel>
+                    <complianceLevel>1.8</complianceLevel>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                 </configuration>
@@ -42,7 +42,7 @@
                             <goal>compile</goal>
                         </goals>
                         <configuration>
-                            <complianceLevel>1.6</complianceLevel>
+                            <complianceLevel>1.8</complianceLevel>
                             <source>${java.version}</source>
                             <target>${java.version}</target>
                         </configuration>
@@ -53,11 +53,23 @@
     </build>
 
     <dependencies>
-        <dependency>
+		<dependency>
+	      <groupId>org.springframework.boot</groupId>
+	      <artifactId>spring-boot-starter</artifactId>
+	    </dependency>
+	    <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
-        <dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-aop</artifactId>
+		</dependency>
+		<dependency>
+	        <groupId>org.aspectj</groupId>
+	        <artifactId>aspectjrt</artifactId>
+	    </dependency>
+    		<dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
         </dependency>

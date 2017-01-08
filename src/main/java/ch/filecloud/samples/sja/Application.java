@@ -1,15 +1,20 @@
 package ch.filecloud.samples.sja;
 
+import ch.filecloud.samples.sja.aop.JpaLifecycleAspect;
 import ch.filecloud.samples.sja.aop.ReFormatAspect;
+import ch.filecloud.samples.sja.event.PostPersistEvent;
 import ch.filecloud.samples.sja.jpa.Customer;
 import ch.filecloud.samples.sja.jpa.CustomerRepository;
 import org.aspectj.lang.Aspects;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.aspectj.EnableSpringConfigured;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 import java.util.List;
 
@@ -21,10 +26,28 @@ import java.util.List;
 @EnableSpringConfigured
 public class Application {
 
-    @Bean
+	private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
+
+	@Bean
     public ReFormatAspect reFormatAspect() {
         return Aspects.aspectOf(ReFormatAspect.class);
     }
+
+	@Bean
+    public JpaLifecycleAspect jpaLifecycleAspect() {
+        return Aspects.aspectOf(JpaLifecycleAspect.class);
+    }
+
+	@TransactionalEventListener(fallbackExecution = true)
+    public void handleOrderCreatedEvent(PostPersistEvent event) {
+		Object source = event.getSource();
+		if (source instanceof Customer) {
+			Customer customer = (Customer) source;
+			LOGGER.info("[PostPersistEvent] detected for {}", customer);
+		} else {
+			LOGGER.info("[PostPersistEvent] detected");
+		}
+	}
 
     public static void main(String[] args) {
 
@@ -40,26 +63,24 @@ public class Application {
 
         // fetch all customers
         Iterable<Customer> customers = repository.findAll();
-        System.out.println("Customers found with findAll():");
-        System.out.println("-------------------------------");
+        LOGGER.info("Customers found with findAll():");
+        LOGGER.info("-------------------------------");
         for (Customer customer : customers) {
-            System.out.println(customer);
+            LOGGER.info(customer.toString());
         }
-        System.out.println();
 
         // fetch an individual customer by ID
         Customer customer = repository.findOne(1L);
-        System.out.println("Customer found with findOne(1L):");
-        System.out.println("--------------------------------");
-        System.out.println(customer);
-        System.out.println();
+        LOGGER.info("Customer found with findOne(1L):");
+        LOGGER.info("--------------------------------");
+        LOGGER.info(customer.toString());
 
         // fetch customers by last name
         List<Customer> bauers = repository.findByLastName("Bauer");
-        System.out.println("Customer found with findByLastName('Bauer'):");
-        System.out.println("--------------------------------------------");
+        LOGGER.info("Customer found with findByLastName('Bauer'):");
+        LOGGER.info("--------------------------------------------");
         for (Customer bauer : bauers) {
-            System.out.println(bauer);
+            LOGGER.info(bauer.toString());
         }
 
         context.close();

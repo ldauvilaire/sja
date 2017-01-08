@@ -36,4 +36,7 @@ public class Customer {
                 id, firstName, lastName);
     }
 
+    @PostPersist
+    public void postPersist() {
+    }
 }

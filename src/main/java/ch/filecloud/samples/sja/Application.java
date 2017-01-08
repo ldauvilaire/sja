@@ -29,17 +29,17 @@ public class Application {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
 
 	@Bean
-    public ReFormatAspect reFormatAspect() {
-        return Aspects.aspectOf(ReFormatAspect.class);
-    }
+	public ReFormatAspect reFormatAspect() {
+		return Aspects.aspectOf(ReFormatAspect.class);
+	}
 
 	@Bean
-    public JpaLifecycleAspect jpaLifecycleAspect() {
-        return Aspects.aspectOf(JpaLifecycleAspect.class);
-    }
+	public JpaLifecycleAspect jpaLifecycleAspect() {
+		return Aspects.aspectOf(JpaLifecycleAspect.class);
+	}
 
 	@TransactionalEventListener(fallbackExecution = true)
-    public void handleOrderCreatedEvent(PostPersistEvent event) {
+	public void handlePostPersistEvent(PostPersistEvent event) {
 		Object source = event.getSource();
 		if (source instanceof Customer) {
 			Customer customer = (Customer) source;
@@ -49,41 +49,40 @@ public class Application {
 		}
 	}
 
-    public static void main(String[] args) {
+	public static void main(String[] args) {
 
-        ConfigurableApplicationContext context = SpringApplication.run(Application.class);
-        CustomerRepository repository = context.getBean(CustomerRepository.class);
+		ConfigurableApplicationContext context = SpringApplication.run(Application.class);
+		CustomerRepository repository = context.getBean(CustomerRepository.class);
 
-        // save a couple of customers
-        repository.save(new Customer("Jack", "Bauer"));
-        repository.save(new Customer("Chloe", "O'Brian"));
-        repository.save(new Customer("Kim", "Bauer"));
-        repository.save(new Customer("David", "Palmer"));
-        repository.save(new Customer("Michelle", "Dessler"));
+		// save a couple of customers
+		repository.save(new Customer("Jack", "Bauer"));
+		repository.save(new Customer("Chloe", "O'Brian"));
+		repository.save(new Customer("Kim", "Bauer"));
+		repository.save(new Customer("David", "Palmer"));
+		repository.save(new Customer("Michelle", "Dessler"));
 
-        // fetch all customers
-        Iterable<Customer> customers = repository.findAll();
-        LOGGER.info("Customers found with findAll():");
-        LOGGER.info("-------------------------------");
-        for (Customer customer : customers) {
-            LOGGER.info(customer.toString());
-        }
+		// fetch all customers
+		Iterable<Customer> customers = repository.findAll();
+		LOGGER.info("Customers found with findAll():");
+		LOGGER.info("-------------------------------");
+		for (Customer customer : customers) {
+			LOGGER.info(customer.toString());
+		}
 
-        // fetch an individual customer by ID
-        Customer customer = repository.findOne(1L);
-        LOGGER.info("Customer found with findOne(1L):");
-        LOGGER.info("--------------------------------");
-        LOGGER.info(customer.toString());
+		// fetch an individual customer by ID
+		Customer customer = repository.findOne(1L);
+		LOGGER.info("Customer found with findOne(1L):");
+		LOGGER.info("--------------------------------");
+		LOGGER.info(customer.toString());
 
-        // fetch customers by last name
-        List<Customer> bauers = repository.findByLastName("Bauer");
-        LOGGER.info("Customer found with findByLastName('Bauer'):");
-        LOGGER.info("--------------------------------------------");
-        for (Customer bauer : bauers) {
-            LOGGER.info(bauer.toString());
-        }
+		// fetch customers by last name
+		List<Customer> bauers = repository.findByLastName("Bauer");
+		LOGGER.info("Customer found with findByLastName('Bauer'):");
+		LOGGER.info("--------------------------------------------");
+		for (Customer bauer : bauers) {
+			LOGGER.info(bauer.toString());
+		}
 
-        context.close();
-    }
-
+		context.close();
+	}
 }
